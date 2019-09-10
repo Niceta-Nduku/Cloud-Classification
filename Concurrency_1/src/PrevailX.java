@@ -1,7 +1,7 @@
 import java.util.concurrent.RecursiveTask;
 import java.util.*;
 
-public class PrevailY extends RecursiveTask{
+public class PrevailX extends RecursiveTask{
 
 	int xLow, yLow, tLow;
 	int xHigh, yHigh, tHigh;
@@ -11,7 +11,7 @@ public class PrevailY extends RecursiveTask{
 
 	Float windSum = Float.valueOf(0); //sum
 
-	PrevailY (Vector [][][] advection, int tL, int xL, int yL, int tH, int xH, int yH ){
+	PrevailX (Vector [][][] advection, int tL, int xL, int yL, int tH, int xH, int yH ){
 
 		this.advection = advection;
 		xLow = xL; yLow = yL; tLow = tL;
@@ -30,8 +30,8 @@ public class PrevailY extends RecursiveTask{
 				for(int x = xLow; x < xHigh; x++)
 					for(int y = yLow; y < yHigh; y++){
 
-					//windSum[0] += (Float)(advection[t][x][y].get(0));
-					windSum += (Float)(advection[t][x][y].get(1));
+					windSum += (Float)(advection[t][x][y].get(0));
+					//windSum += (Float)(advection[t][x][y].get(1));
 					
 		}
 
@@ -40,8 +40,8 @@ public class PrevailY extends RecursiveTask{
 
 		else {
 
-			Prevail left = new Prevail(advection,tLow,xLow,yLow,(tHigh+tLow)/2,(xHigh+xLow)/2, (yHigh+yLow)/2);
-			Prevail right = new Prevail(advection,(tHigh+tLow)/2,(xHigh+xLow)/2, (yHigh+yLow)/2, tHigh,xHigh,yHigh);
+			PrevailX left = new PrevailX(advection,tLow,xLow,yLow,(tHigh+tLow)/2,(xHigh+xLow)/2, (yHigh+yLow)/2);
+			PrevailX right = new PrevailX(advection,(tHigh+tLow)/2,(xHigh+xLow)/2, (yHigh+yLow)/2, tHigh,xHigh,yHigh);
 			// order of next 4 lines
 			// essential – why?
 			left.fork();

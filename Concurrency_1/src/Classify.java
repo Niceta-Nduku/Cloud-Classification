@@ -8,13 +8,14 @@ public class Classify extends RecursiveAction{
 	int [][][] classification; // cloud type per grid point, evolving over time
 	static int xLow, yLow, tLow;
 	static int xHigh, yHigh, tHigh;
-	static final int SEQUENTIAL_CUTOFF=500;
+	static final int SEQUENTIAL_CUTOFF=300000;
 	int dimL, dimH;
 
-	Classify (Vector [][][] advection, float [][][] convection, int tL, int xL, int yL, int tH, int xH, int yH ){
+	Classify (Vector [][][] advection, float [][][] convection, int [][][] classification, int tL, int xL, int yL, int tH, int xH, int yH ){
 
 		this.advection = advection;
 		this.convection = convection;
+		this.classification = classification;
 		xLow = xL; yLow = yL; tLow = tL;
 		xHigh = xH; yHigh = yH; tHigh = tH; 
 		dimL = xLow * yLow * tLow;
@@ -44,9 +45,11 @@ public class Classify extends RecursiveAction{
 
 		else {
 
-			Classify left = new Classify(advection,convection,tLow,xLow,yLow,(tHigh+tLow)/2,(xHigh+xLow)/2, (yHigh+yLow)/2);
-			Classify right = new Classify(advection,convection,(tHigh+tLow)/2,(xHigh+xLow)/2, (yHigh+yLow)/2, tHigh,xHigh,yHigh);
-			
+			Classify left = new Classify(advection,convection,classification,tLow,xLow,yLow,(tHigh+tLow)/2,(xHigh+xLow)/2, (yHigh+yLow)/2);
+			Classify right = new Classify(advection,convection,classification,(tHigh+tLow)/2,(xHigh+xLow)/2, (yHigh+yLow)/2, tHigh,xHigh,yHigh);
+			left.fork();
+			right.compute();
+			left.join();
 		}
 	}
 

@@ -101,13 +101,23 @@ public class CloudData {
 	static final ForkJoinPool prevailFJPool = new ForkJoinPool();
 	static final ForkJoinPool classifyFJPool = new ForkJoinPool();
 	
-	// static void prevailingWind(int[] arr){
-	//   wind = prevailFJPool.invoke(new Prevail(advection,0,0,0,dimt,dimx,dimy));
-	// }
+	static void prevailingWind(){
+		
+	  	Float xSum = (Float)prevailFJPool.invoke(new PrevailX(advection,0,0,0,dimt,dimx,dimy));
+	  	Float ySum = (Float)prevailFJPool.invoke(new PrevailY(advection,0,0,0,dimt,dimx,dimy));
 
-	// static void classification(int[] arr){
-	//   classification = classifyFJPool.invoke(new Classify(advection,convection,0,0,0,dimt,dimx,dimy));
-	// }	
+	  	System.out.println(xSum+","+ySum);
+		wind.set(0,ySum/dim());
+		wind.set(1,ySum/dim());
+
+	}
+
+	static void classification(){
+		Classify c = new Classify(advection,convection,classification,0,0,0,dimt,dimx,dimy);
+
+		classifyFJPool.invoke(c);
+		classification = c.classification;
+	}	
 
 	 /**
      * @param args the command line arguments
@@ -117,31 +127,47 @@ public class CloudData {
         // TODO code application logic here
 
         String inputFileName = args[0];
-        String outputFileName = args[1];
+        String seqOutputFileName = args[1];
+        String parOutputFileName = args[2];
 
         Locale.setDefault(Locale.US);
 
     	readData(inputFileName);
+
     	float time;
 
-    	SeqCloudData sequential = new SeqCloudData();
-    	
-    	for(int i = 0; i<5; i++){
-    		tick();
-    		wind = sequential.prevailingWind(advection, dim());
-    		time = tock();
-    		System.out.print(time);
-    	}
-    	System.out.println();
-    	
-    	for(int i = 0; i<5; i++){
-    		tick();
-    		classification = sequential.classification(advection, convection);
-    		time = tock();
-    		System.out.print(time);
-    	}
-    	System.out.println();    	
+    	System.out.println("Starting sequential");
 
-    	writeData(outputFileName, wind);
+    	SeqCloudData sequential = new SeqCloudData(advection,convection,classification,dimx,dimy,dimt);
+
+		tick();
+		sequential.prevailingWind(dim());
+		wind=sequential.wind;
+		time = tock();
+		System.out.println(time);
+		//System.out.println(wind.toString());
+
+		tick();
+		sequential.classification();
+		classification = sequential.classification;
+		time = tock();
+		System.out.println(time);
+
+		writeData(seqOutputFileName, wind);
+
+		System.out.println("Starting Parallel");
+
+		tick();
+		prevailingWind();
+		time = tock();
+		System.out.println(time);
+		//System.out.println(wind.toString());
+
+		tick();
+		classification();
+		time = tock();
+		System.out.println(time);
+    	
+    	writeData(parOutputFileName, wind);
     }
 }

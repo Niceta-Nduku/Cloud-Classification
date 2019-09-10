@@ -40,8 +40,8 @@ public class PrevailY extends RecursiveTask{
 
 		else {
 
-			Prevail left = new Prevail(advection,tLow,xLow,yLow,(tHigh+tLow)/2,(xHigh+xLow)/2, (yHigh+yLow)/2);
-			Prevail right = new Prevail(advection,(tHigh+tLow)/2,(xHigh+xLow)/2, (yHigh+yLow)/2, tHigh,xHigh,yHigh);
+			PrevailY left = new PrevailY(advection,tLow,xLow,yLow,(tHigh+tLow)/2,(xHigh+xLow)/2, (yHigh+yLow)/2);
+			PrevailY right = new PrevailY(advection,(tHigh+tLow)/2,(xHigh+xLow)/2, (yHigh+yLow)/2, tHigh,xHigh,yHigh);
 			// order of next 4 lines
 			// essential – why?
 			left.fork();

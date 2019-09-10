@@ -5,9 +5,19 @@ public class SeqCloudData{
 	static float [][][] convection; // vertical air movement strength, that evolves over time
 	static int [][][] classification; // cloud type per grid point, evolving over time
 	static int dimx, dimy, dimt; // data dimensions
-	private static Vector wind;
+	static Vector wind;
 
-	public static Vector prevailingWind (Vector [][][] advection, int dim){
+	SeqCloudData(Vector [][][] advection, float [][][] convection, int [][][] classification,int dimx, int dimy, int dimt){
+
+		this.advection = advection;
+		this.convection = convection;
+		this.classification = classification;
+		this.dimt=dimt;
+		this.dimx=dimx;
+		this.dimy=dimy;
+	}
+
+	public static void prevailingWind (int dim){
 		
 		Float xSum = Float.valueOf(0);
 		Float ySum = Float.valueOf(0);
@@ -21,20 +31,18 @@ public class SeqCloudData{
 					
 		}
 
-		wind = new Vector();
-		wind.add(0, xSum.floatValue()/dim);
-		wind.add(1, ySum.floatValue()/dim);
+		System.out.println(xSum+","+ySum);
 
-		return wind;
-		
+		wind = new Vector();
+		wind.add(0, xSum/dim);
+		wind.add(1, ySum/dim);
+
 	}
 
 	public static Double localWindDirection(int t, int x, int y){
 
 		Float xSum = Float.valueOf(0);
 		Float ySum = Float.valueOf(0);
-
-		int points = 0;
 
 		for (int i = -1; i<2; i++){
 			for (int j = -1; j<2; j++){
@@ -61,7 +69,7 @@ public class SeqCloudData{
 		return mag;
 	}
 
-	public static int[][][]  classification (Vector [][][] advection, float [][][] convection){
+	public static void classification (){
 
 		for(int t = 0; t < dimt; t++)
 				for(int x = 0; x < dimx; x++)
@@ -78,6 +86,5 @@ public class SeqCloudData{
 						 	classification [t][x][y] = 2;
 		}
 
-		return classification;
 	}
 }
