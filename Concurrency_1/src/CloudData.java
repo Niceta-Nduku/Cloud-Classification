@@ -103,12 +103,11 @@ public class CloudData {
 	
 	static void prevailingWind(){
 		
-	  	Float xSum = (Float)prevailFJPool.invoke(new PrevailX(advection,0,0,0,dimt,dimx,dimy));
-	  	Float ySum = (Float)prevailFJPool.invoke(new PrevailY(advection,0,0,0,dimt,dimx,dimy));
-
-	  	System.out.println(xSum+","+ySum);
-		wind.set(0,ySum/dim());
-		wind.set(1,ySum/dim());
+	  	Float[] sum = (Float[])prevailFJPool.invoke(new Prevail(advection, new CloudData() ,0,dim()));
+	  	
+	  	System.out.println(sum[0]+","+sum[1]);
+		wind.set(0,sum[0]/dim());
+		wind.set(1,sum[1]/dim());
 
 	}
 

@@ -1,54 +1,54 @@
 import java.util.concurrent.RecursiveTask;
 import java.util.*;
 
-public class PrevailY extends RecursiveTask{
+public class Prevail extends RecursiveTask{
 
-	int xLow, yLow, tLow;
-	int xHigh, yHigh, tHigh;
+	int lo; // arguments
+	int hi;
 	Vector [][][] advection;
 	static final int SEQUENTIAL_CUTOFF=300000;
-	int dimL, dimH;
+	CloudData cloudD;
 
-	Float windSum = Float.valueOf(0); //sum
-
-	PrevailY (Vector [][][] advection, int tL, int xL, int yL, int tH, int xH, int yH ){
+	Prevail (Vector [][][] advection, CloudData d, int l, int h){
 
 		this.advection = advection;
-		xLow = xL; yLow = yL; tLow = tL;
-		xHigh = xH; yHigh = yH; tHigh = tH;  
-
-		dimL = xLow * yLow * tLow;
-		dimH = xHigh * yHigh * tHigh;
+		cloudD = d;
+		lo=l; hi=h;
 
 	}
 
-	protected Float compute(){
+	protected Float[] compute(){
 
-		if((dimH-dimL)< SEQUENTIAL_CUTOFF) {
+		if((hi-lo)< SEQUENTIAL_CUTOFF) {
+
+			Float xSum = Float.valueOf(0);
+			Float ySum = Float.valueOf(0);
+
+			int[] ind = new int[3];
 			
-			for(int t = tLow; t < tHigh; t++)
-				for(int x = xLow; x < xHigh; x++)
-					for(int y = yLow; y < yHigh; y++){
+			for(int i=lo; i < hi; i++){
 
-					//windSum[0] += (Float)(advection[t][x][y].get(0));
-					windSum += (Float)(advection[t][x][y].get(1));
+					cloudD.locate(i,ind);
+
+					xSum += (Float)(advection[ind[0]][ind[1]][ind[2]].get(0));
+					ySum += (Float)(advection[ind[0]][ind[1]][ind[2]].get(1));
 					
 		}
 
-			return windSum;
+			return new Float[] {xSum,ySum};
 		}
 
 		else {
 
-			Prevail left = new Prevail(advection,tLow,xLow,yLow,(tHigh+tLow)/2,(xHigh+xLow)/2, (yHigh+yLow)/2);
-			Prevail right = new Prevail(advection,(tHigh+tLow)/2,(xHigh+xLow)/2, (yHigh+yLow)/2, tHigh,xHigh,yHigh);
+			Prevail left = new Prevail(advection,cloudD, lo,(hi+lo)/2);
+			Prevail right = new Prevail(advection,cloudD,(hi+lo)/2,hi);
 			// order of next 4 lines
 			// essential – why?
 			left.fork();
-			Float rightAns = (Float)right.compute();
-			Float leftAns  = (Float)left.join();
+			Float[] rightAns = (Float[])right.compute();
+			Float[] leftAns  = (Float[])left.join();
 
-			return leftAns + rightAns;
+			return new Float[] {leftAns[0] + rightAns[0],leftAns[1] + rightAns[1]};
 	}
 }
 }
