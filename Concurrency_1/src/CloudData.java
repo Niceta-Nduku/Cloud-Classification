@@ -11,10 +11,12 @@ public class CloudData {
 
 	static Vector [][][] advection; // in-plane regular grid of wind vectors, that evolve over time
 	static float [][][] convection; // vertical air movement strength, that evolves over time
-	static int [][][] classification; // cloud type per grid point, evolving over time
+	static int [][][] classification; // cloud type per tgrid point, evolving over time
 	static int dimx, dimy, dimt; // data dimensions
 	private static Vector wind;
-	static long startTime = 0;
+	private static long startTime = 0;
+
+	private static ArrayList times = new ArrayList(4);
 
 	private static void tick(){
 		startTime = System.currentTimeMillis();
@@ -103,9 +105,8 @@ public class CloudData {
 	
 	static void prevailingWind(){
 		
-	  	Float[] sum = (Float[])prevailFJPool.invoke(new Prevail(advection, new CloudData() ,0,dim()));
+	  	Float[] sum = (Float[])prevailFJPool.invoke(new Prevail(advection,0,dim(),dimt,dimx,dimy));
 	  	
-	  	System.out.println(sum[0]+","+sum[1]);
 		wind.set(0,sum[0]/dim());
 		wind.set(1,sum[1]/dim());
 
@@ -125,17 +126,17 @@ public class CloudData {
     public static void main(String[] args){
         // TODO code application logic here
 
-        String inputFileName = args[0];
-        String seqOutputFileName = args[1];
-        String parOutputFileName = args[2];
+        String inputFileName = args[0]; // file containing all data
+        String seqOutputFileName = args[1]; // file name for sequential output
+        String parOutputFileName = args[2]; // filename for parallel output
 
-        Locale.setDefault(Locale.US);
+        Locale.setDefault(Locale.US); /// needed to use this to remove comas
 
     	readData(inputFileName);
 
-    	float time;
+    	float time;// variable to be used to ge the times
 
-    	System.out.println("Starting sequential");
+    	//System.out.println("Starting sequential");
 
     	SeqCloudData sequential = new SeqCloudData(advection,convection,classification,dimx,dimy,dimt);
 
@@ -143,30 +144,36 @@ public class CloudData {
 		sequential.prevailingWind(dim());
 		wind=sequential.wind;
 		time = tock();
-		System.out.println(time);
+		//System.out.println(time);
+		times.add(time);
 		//System.out.println(wind.toString());
 
 		tick();
 		sequential.classification();
 		classification = sequential.classification;
 		time = tock();
-		System.out.println(time);
+		//System.out.println(time);
+		times.add(time);
+
 
 		writeData(seqOutputFileName, wind);
 
-		System.out.println("Starting Parallel");
+		//System.out.println("Starting Parallel");
 
 		tick();
 		prevailingWind();
 		time = tock();
-		System.out.println(time);
+		//System.out.println(time);
+		times.add(time);
 		//System.out.println(wind.toString());
 
 		tick();
 		classification();
 		time = tock();
-		System.out.println(time);
+		//System.out.println(time);
+		times.add(time);
     	
     	writeData(parOutputFileName, wind);
+    	System.out.println(times.toString());
     }
 }

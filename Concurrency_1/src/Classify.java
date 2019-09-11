@@ -1,6 +1,12 @@
 import java.util.*;
 import java.util.concurrent.RecursiveAction;
 
+
+/**
+* This is the main application that creats a hashtable from data in a file
+* searches the table and displays the search statistic  
+* @author Niceta Nduku NDKNIC001
+*/
 public class Classify extends RecursiveAction{
 
 	static Vector [][][] advection; // in-plane regular grid of wind vectors, that evolve over time
@@ -8,9 +14,15 @@ public class Classify extends RecursiveAction{
 	int [][][] classification; // cloud type per grid point, evolving over time
 	static int xLow, yLow, tLow;
 	static int xHigh, yHigh, tHigh;
-	static final int SEQUENTIAL_CUTOFF=300000;
+	static final int SEQUENTIAL_CUTOFF=100000;
 	int dimL, dimH;
 
+	
+	/**
+	* This is the main application that creats a hashtable from data in a file
+	* searches the table and displays the search statistic  
+	* @author Niceta Nduku NDKNIC001
+	*/
 	Classify (Vector [][][] advection, float [][][] convection, int [][][] classification, int tL, int xL, int yL, int tH, int xH, int yH ){
 
 		this.advection = advection;
@@ -23,6 +35,11 @@ public class Classify extends RecursiveAction{
 
 	}
 
+	/**
+	* This is the main application that creats a hashtable from data in a file
+	* searches the table and displays the search statistic  
+	* @author Niceta Nduku NDKNIC001
+	*/
 	protected void compute(){
 
 		if((dimH-dimL)< SEQUENTIAL_CUTOFF) {
@@ -53,12 +70,18 @@ public class Classify extends RecursiveAction{
 		}
 	}
 
+
+	/**
+	* This is the main application that creats a hashtable from data in a file
+	* searches the table and displays the search statistic  
+	* @author Niceta Nduku NDKNIC001
+	*/
 	public static Double localWindDirection(int t, int x, int y){
 
 		Float xSum = Float.valueOf(0);
 		Float ySum = Float.valueOf(0);
 
-		int points = 0;
+		int neighbours = 0;
 
 		for (int i = -1; i<2; i++){
 			for (int j = -1; j<2; j++){
@@ -74,11 +97,12 @@ public class Classify extends RecursiveAction{
 
 				xSum += (Float)advection[t][x+i][y+j].get(0);
 				ySum += (Float)advection[t][x+i][y+j].get(1);
+				neighbours++;
 			}
 		} 
 
-		Float xAvg = xSum/9;
-		Float yAvg = ySum/9;
+		Float xAvg = xSum/neighbours;
+		Float yAvg = ySum/neighbours;
 
 		Double mag = Math.sqrt(Math.pow(xAvg,2) +Math.pow(yAvg,2));
 

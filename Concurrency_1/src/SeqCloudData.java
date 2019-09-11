@@ -1,4 +1,11 @@
 import java.util.*;
+
+
+/**
+* This is the main application that creats a hashtable from data in a file
+* searches the table and displays the search statistic  
+* @author Niceta Nduku NDKNIC001
+*/
 public class SeqCloudData{
 
 	static Vector [][][] advection; // in-plane regular grid of wind vectors, that evolve over time
@@ -7,6 +14,11 @@ public class SeqCloudData{
 	static int dimx, dimy, dimt; // data dimensions
 	static Vector wind;
 
+	/**
+	* This is the main application that creats a hashtable from data in a file
+	* searches the table and displays the search statistic  
+	* @author Niceta Nduku NDKNIC001
+	*/
 	SeqCloudData(Vector [][][] advection, float [][][] convection, int [][][] classification,int dimx, int dimy, int dimt){
 
 		this.advection = advection;
@@ -17,7 +29,13 @@ public class SeqCloudData{
 		this.dimy=dimy;
 	}
 
-	public static void prevailingWind (int dim){
+
+	/**
+	* This is the main application that creats a hashtable from data in a file
+	* searches the table and displays the search statistic  
+	* @author Niceta Nduku NDKNIC001
+	*/
+	public void prevailingWind (int dim){
 		
 		Float xSum = Float.valueOf(0);
 		Float ySum = Float.valueOf(0);
@@ -31,18 +49,23 @@ public class SeqCloudData{
 					
 		}
 
-		System.out.println(xSum+","+ySum);
-
 		wind = new Vector();
 		wind.add(0, xSum/dim);
 		wind.add(1, ySum/dim);
 
 	}
 
-	public static Double localWindDirection(int t, int x, int y){
+
+	/**
+	* This is the main application that creats a hashtable from data in a file
+	* searches the table and displays the search statistic  
+	* @author Niceta Nduku NDKNIC001
+	*/
+	private static Double localWindDirection(int t, int x, int y){
 
 		Float xSum = Float.valueOf(0);
 		Float ySum = Float.valueOf(0);
+		int neighbours=0;
 
 		for (int i = -1; i<2; i++){
 			for (int j = -1; j<2; j++){
@@ -58,18 +81,25 @@ public class SeqCloudData{
 
 				xSum += (Float)advection[t][x+i][y+j].get(0);
 				ySum += (Float)advection[t][x+i][y+j].get(1);
+				neighbours++;
 			}
 		} 
 
-		Float xAvg = xSum/9;
-		Float yAvg = ySum/9;
+		Float xAvg = xSum/neighbours;
+		Float yAvg = ySum/neighbours;
 
 		Double mag = Math.sqrt(Math.pow(xAvg,2) +Math.pow(yAvg,2));
 
 		return mag;
 	}
 
-	public static void classification (){
+
+	/**
+	* This is the main application that creats a hashtable from data in a file
+	* searches the table and displays the search statistic  
+	* @author Niceta Nduku NDKNIC001
+	*/
+	public void classification (){
 
 		for(int t = 0; t < dimt; t++)
 				for(int x = 0; x < dimx; x++)
