@@ -12,7 +12,7 @@ public class Prevail extends RecursiveTask{
 	int hi;
 	Vector [][][] advection;
 	static int dimx, dimy, dimt; // data dimensions
-	static final int SEQUENTIAL_CUTOFF=100;
+	static final int SEQUENTIAL_CUTOFF=5;
 
 	/**
 	* This is the main application that creats a hashtable from data in a file

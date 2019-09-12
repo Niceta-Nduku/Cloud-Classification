@@ -14,7 +14,7 @@ public class Classify extends RecursiveAction{
 	int [][][] classification; // cloud type per grid point, evolving over time
 	static int xLow, yLow, tLow;
 	static int xHigh, yHigh, tHigh;
-	static final int SEQUENTIAL_CUTOFF=100000;
+	static final int SEQUENTIAL_CUTOFF=5;
 	int dimL, dimH;
 
 	

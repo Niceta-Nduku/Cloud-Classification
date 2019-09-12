@@ -29,6 +29,12 @@ public class SeqCloudData{
 		this.dimy=dimy;
 	}
 
+	static void locate(int pos, int [] ind)
+	{
+		ind[0] = (int) pos / (dimx*dimy); // t
+		ind[1] = (pos % (dimx*dimy)) / dimy; // x
+		ind[2] = pos % (dimy); // y
+	}
 
 	/**
 	* This is the main application that creats a hashtable from data in a file
@@ -40,12 +46,14 @@ public class SeqCloudData{
 		Float xSum = Float.valueOf(0);
 		Float ySum = Float.valueOf(0);
 
-		for(int t = 0; t < dimt; t++)
-			for(int x = 0; x < dimx; x++)
-				for(int y = 0; y < dimy; y++){
+		int[] ind = new int[3];
 
-					xSum += (Float)(advection[t][x][y].get(0));
-					ySum += (Float)(advection[t][x][y].get(1));
+		for(int i=0; i < dim; i++){
+
+				locate(i,ind);
+
+				xSum += (Float)(advection[ind[0]][ind[1]][ind[2]].get(0));
+				ySum += (Float)(advection[ind[0]][ind[1]][ind[2]].get(1));
 					
 		}
 
@@ -54,6 +62,7 @@ public class SeqCloudData{
 		wind.add(1, ySum/dim);
 
 	}
+
 
 
 	/**

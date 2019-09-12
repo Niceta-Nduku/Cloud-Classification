@@ -136,44 +136,42 @@ public class CloudData {
 
     	float time;// variable to be used to ge the times
 
-    	//System.out.println("Starting sequential");
+    	// Sequential
 
     	SeqCloudData sequential = new SeqCloudData(advection,convection,classification,dimx,dimy,dimt);
 
+    	System.gc();
 		tick();
 		sequential.prevailingWind(dim());
 		wind=sequential.wind;
 		time = tock();
-		//System.out.println(time);
 		times.add(time);
-		//System.out.println(wind.toString());
 
+		System.gc();
 		tick();
 		sequential.classification();
 		classification = sequential.classification;
 		time = tock();
-		//System.out.println(time);
 		times.add(time);
 
 
-		writeData(seqOutputFileName, wind);
+		writeData(seqOutputFileName, wind); // write sequential output to file
 
-		//System.out.println("Starting Parallel");
-
+		// Parallel
+		System.gc();
 		tick();
 		prevailingWind();
 		time = tock();
-		//System.out.println(time);
 		times.add(time);
-		//System.out.println(wind.toString());
 
+		System.gc();
 		tick();
 		classification();
 		time = tock();
-		//System.out.println(time);
 		times.add(time);
     	
-    	writeData(parOutputFileName, wind);
-    	System.out.println(times.toString());
+    	writeData(parOutputFileName, wind);// write parallel output to file
+
+    	System.out.println(times.toString());// output all times
     }
 }
