@@ -10,7 +10,7 @@ ${BINDIR}/%.class: ${SRCDIR}/%.java
 	javac $< -cp ${BINDIR} -d ${BINDIR} 
 
 # first build rule
-${BINDIR}/C.class: ${BINDIR}/SeqCloudData.class ${BINDIR}/Prevail.class ${BINDIR}/Classify.class ${BINDIR}/CloudData.class 
+${BINDIR}/C.class:${BINDIR}/CloudData.class ${BINDIR}/SeqCloudData.class ${BINDIR}/Prevail.class ${BINDIR}/Classify.class ${BINDIR}/ParallelCloudData.class 
 
 run:
 	java ${BINDIR}/CloudData.class "largesample_input.txt" "../largesample_output2.txt" "../largesample_output3.txt"

@@ -2,8 +2,7 @@ import java.util.*;
 
 
 /**
-* This is the main application that creats a hashtable from data in a file
-* searches the table and displays the search statistic  
+* This is the main class containing the sequential code
 * @author Niceta Nduku NDKNIC001
 */
 public class SeqCloudData{
@@ -14,11 +13,17 @@ public class SeqCloudData{
 	static int dimx, dimy, dimt; // data dimensions
 	static Vector wind;
 
-	/**
-	* This is the main application that creats a hashtable from data in a file
-	* searches the table and displays the search statistic  
-	* @author Niceta Nduku NDKNIC001
-	*/
+	private static long startTime = 0;
+
+	private static ArrayList times = new ArrayList(4);
+
+	private static void tick(){
+		startTime = System.currentTimeMillis();
+	}
+	private static float tock(){
+		return (System.currentTimeMillis() - startTime) / 1000.0f; 
+	}
+
 	SeqCloudData(Vector [][][] advection, float [][][] convection, int [][][] classification,int dimx, int dimy, int dimt){
 
 		this.advection = advection;
@@ -36,11 +41,6 @@ public class SeqCloudData{
 		ind[2] = pos % (dimy); // y
 	}
 
-	/**
-	* This is the main application that creats a hashtable from data in a file
-	* searches the table and displays the search statistic  
-	* @author Niceta Nduku NDKNIC001
-	*/
 	public void prevailingWind (int dim){
 		
 		Float xSum = Float.valueOf(0);
@@ -63,13 +63,6 @@ public class SeqCloudData{
 
 	}
 
-
-
-	/**
-	* This is the main application that creats a hashtable from data in a file
-	* searches the table and displays the search statistic  
-	* @author Niceta Nduku NDKNIC001
-	*/
 	private static Double localWindDirection(int t, int x, int y){
 
 		Float xSum = Float.valueOf(0);
@@ -102,12 +95,6 @@ public class SeqCloudData{
 		return mag;
 	}
 
-
-	/**
-	* This is the main application that creats a hashtable from data in a file
-	* searches the table and displays the search statistic  
-	* @author Niceta Nduku NDKNIC001
-	*/
 	public void classification (){
 
 		for(int t = 0; t < dimt; t++)
@@ -125,5 +112,42 @@ public class SeqCloudData{
 						 	classification [t][x][y] = 2;
 		}
 
+	}
+	public static void main(String[] args){
+
+        String inputFileName = args[0]; // file containing all data
+        String seqOutputFileName = args[1]; // file name for sequential output
+
+        Locale.setDefault(Locale.US); /// needed to use this to remove comas
+
+    	CloudData.readData(inputFileName);
+    	int [][][] classification = CloudData.classification;
+    	Vector [][][] advection = CloudData.advection;
+    	float [][][] convection = CloudData.convection;
+    	int dimt = CloudData.dimt;
+    	int dimx = CloudData.dimx;
+    	int dimy = CloudData.dimy;
+
+    	float time;// variable to be used to ge the times
+
+    	// Sequential
+    	SeqCloudData sequential = new SeqCloudData(advection,convection,classification,dimx,dimy,dimt);
+
+    	System.gc();
+		tick();
+		sequential.prevailingWind(CloudData.dim());
+		time = tock();
+		times.add(time);
+
+		System.gc();
+		tick();
+		sequential.classification();
+		time = tock();
+		times.add(time);
+
+		CloudData.classification = classification;
+		CloudData.writeData(seqOutputFileName, wind); // write sequential output to file
+
+		System.out.println(times.toString());// output all times
 	}
 }

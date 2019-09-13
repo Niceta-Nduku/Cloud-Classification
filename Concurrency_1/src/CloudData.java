@@ -5,25 +5,17 @@ import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.util.*;
 
-import java.util.concurrent.ForkJoinPool;
-
+/**
+* Cloud Data class
+* Reads and writes the data 
+* @author Prof James Bain
+*/
 public class CloudData {
 
 	static Vector [][][] advection; // in-plane regular grid of wind vectors, that evolve over time
 	static float [][][] convection; // vertical air movement strength, that evolves over time
 	static int [][][] classification; // cloud type per tgrid point, evolving over time
 	static int dimx, dimy, dimt; // data dimensions
-	private static Vector wind;
-	private static long startTime = 0;
-
-	private static ArrayList times = new ArrayList(4);
-
-	private static void tick(){
-		startTime = System.currentTimeMillis();
-	}
-	private static float tock(){
-		return (System.currentTimeMillis() - startTime) / 1000.0f; 
-	}
 
 	// overall number of elements in the timeline grids
 	static int dim(){
@@ -98,80 +90,5 @@ public class CloudData {
 			 System.out.println("Unable to open output file "+fileName);
 				e.printStackTrace();
 		 }
-	}
-
-	static final ForkJoinPool prevailFJPool = new ForkJoinPool();
-	static final ForkJoinPool classifyFJPool = new ForkJoinPool();
-	
-	static void prevailingWind(){
-		
-	  	Float[] sum = (Float[])prevailFJPool.invoke(new Prevail(advection,0,dim(),dimt,dimx,dimy));
-	  	
-		wind.set(0,sum[0]/dim());
-		wind.set(1,sum[1]/dim());
-
-	}
-
-	static void classification(){
-		Classify c = new Classify(advection,convection,classification,0,0,0,dimt,dimx,dimy);
-
-		classifyFJPool.invoke(c);
-		classification = c.classification;
 	}	
-
-	 /**
-     * @param args the command line arguments
-     */
-
-    public static void main(String[] args){
-        // TODO code application logic here
-
-        String inputFileName = args[0]; // file containing all data
-        String seqOutputFileName = args[1]; // file name for sequential output
-        String parOutputFileName = args[2]; // filename for parallel output
-
-        Locale.setDefault(Locale.US); /// needed to use this to remove comas
-
-    	readData(inputFileName);
-
-    	float time;// variable to be used to ge the times
-
-    	// Sequential
-
-    	SeqCloudData sequential = new SeqCloudData(advection,convection,classification,dimx,dimy,dimt);
-
-    	System.gc();
-		tick();
-		sequential.prevailingWind(dim());
-		wind=sequential.wind;
-		time = tock();
-		times.add(time);
-
-		System.gc();
-		tick();
-		sequential.classification();
-		classification = sequential.classification;
-		time = tock();
-		times.add(time);
-
-
-		writeData(seqOutputFileName, wind); // write sequential output to file
-
-		// Parallel
-		System.gc();
-		tick();
-		prevailingWind();
-		time = tock();
-		times.add(time);
-
-		System.gc();
-		tick();
-		classification();
-		time = tock();
-		times.add(time);
-    	
-    	writeData(parOutputFileName, wind);// write parallel output to file
-
-    	System.out.println(times.toString());// output all times
-    }
 }

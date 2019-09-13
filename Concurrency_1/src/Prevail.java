@@ -2,23 +2,17 @@ import java.util.concurrent.RecursiveTask;
 import java.util.*;
 
 /**
-* This is the main application that creats a hashtable from data in a file
-* searches the table and displays the search statistic  
+* This is the class that extends RecursiveTask for the parallel prevailinf wind calculation
 * @author Niceta Nduku NDKNIC001
 */
 public class Prevail extends RecursiveTask{
 
+	Vector [][][] advection;
 	int lo; // arguments
 	int hi;
-	Vector [][][] advection;
 	static int dimx, dimy, dimt; // data dimensions
-	static final int SEQUENTIAL_CUTOFF=5;
+	static final int SEQUENTIAL_CUTOFF=100000;
 
-	/**
-	* This is the main application that creats a hashtable from data in a file
-	* searches the table and displays the search statistic  
-	* @author Niceta Nduku NDKNIC001
-	*/
 	Prevail (Vector [][][] advection, int l, int h, int dimt, int dimx, int dimy){
 
 
@@ -30,11 +24,6 @@ public class Prevail extends RecursiveTask{
 
 	}
 
-	/**
-	* This is the main application that creats a hashtable from data in a file
-	* searches the table and displays the search statistic  
-	* @author Niceta Nduku NDKNIC001
-	*/
 	protected Float[] compute(){
 
 		if((hi-lo)< SEQUENTIAL_CUTOFF) {
@@ -70,11 +59,6 @@ public class Prevail extends RecursiveTask{
 		}
 	}
 
-	/**
-	* This is the main application that creats a hashtable from data in a file
-	* searches the table and displays the search statistic  
-	* @author Niceta Nduku NDKNIC001
-	*/
 	static void locate(int pos, int [] ind,int dimt,int dimx,int dimy)
 	{
 		ind[0] = (int) pos / (dimx*dimy); // t
